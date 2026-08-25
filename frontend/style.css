@@ -1,0 +1,263 @@
+/* ============================================
+   VARIABLES — tocá acá para cambiar colores/tipografía en todo el sitio
+   ============================================ */
+:root {
+  --azul-oscuro: #0d1f3c;
+  --azul-medio: #16345f;
+  --azul-claro: #2b5a9e;
+  --verde-precio: #1a7a3c;
+  --fuente:'Nunito Sans', 'Segoe UI', Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--fuente);
+  background: #dedee4;
+  color: #1a1a1a;
+}
+
+/* ============================================
+   HERO — el header grande de arriba
+   ============================================ */
+.hero {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(13,31,60,0.55) 0%, rgba(43,90,158,0.45) 100%),
+    url('img/berisso_portada.jpg') center/cover no-repeat;
+  color: white;
+  padding: 100px 20px;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+.hero-contenido {
+  max-width: 700px;
+}
+.hero .eyebrow { font-size: 0.95em; opacity: 0.85; margin-bottom: 6px; }
+.hero h1 { font-size: 2.8em; font-weight: 800; line-height: 1.15; }
+.hero p.subtitulo { margin-top: 14px; font-size: 1.25em; opacity: 0.95; }
+/* ============================================
+   CATEGORIAS — los botones de filtro
+   ============================================ */
+.categorias {
+  max-width: 1000px;
+  margin: 30px auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  /* Punto 1: centrar los botones */
+  justify-content: center;
+}
+
+/* ============================================
+   BUSCADOR
+   ============================================ */
+.buscador {
+  max-width: 400px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 8px;
+}
+.buscador input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-family: var(--fuente);
+  font-size: 0.95em;
+}
+.buscador button {
+  background: var(--azul-medio);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0 18px;
+  cursor: pointer;
+  font-size: 1em;
+}
+
+/* ============================================
+   DÍAS — pestañas tipo calendario (LUN 24, MAR 25...)
+   ============================================ */
+.dias {
+  max-width: 1000px;
+  margin: 20px auto 0;
+  padding: 0 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.dia {
+  background: white;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  padding: 8px 14px;
+  min-width: 54px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--fuente);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease;
+}
+.dia:hover { transform: translateY(-2px); }
+.dia-nombre { font-size: 0.7em; font-weight: 600; color: #888; }
+.dia-numero { font-size: 1.2em; font-weight: 800; color: var(--azul-oscuro); }
+.dia.activo { border-color: var(--azul-medio); }
+.dia.activo .dia-numero { color: var(--azul-medio); }
+
+.categorias button {
+  background: white;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  font-size: 0.9em;
+  font-weight: 600;
+  font-family: var(--fuente);
+  color: var(--azul-medio);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.categorias button:hover { transform: translateY(-2px); }
+.categorias button.activo { background: var(--azul-medio); color: white; }
+
+/* ============================================
+   TARJETAS DE EVENTOS
+   ============================================ */
+#eventos {
+  max-width: 1000px;
+  margin: 40px auto 30px;
+  padding: 0 20px;
+
+  /* Punto 4: más espacio entre tarjetas (antes 20px) */
+  gap: 32px;
+}
+
+.grupo-dia {
+  margin-bottom: 36px;
+}
+
+.grupo-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid #9fb0cc;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+  text-transform: capitalize;
+  font-size: 1.05em;
+}
+.grupo-cantidad {
+  font-weight: 500;
+  color: #888;
+  text-transform: none;
+  font-size: 0.85em;
+}
+
+.grupo-eventos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 32px;
+}
+
+.evento {
+  background: white;
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.evento:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.14); }
+
+.categoria-tag {
+  display: inline-block;
+  background: #e8f0fe;
+  color: var(--azul-medio);
+  font-size: 0.72em;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  width: fit-content;
+}
+
+.evento h2 {
+  font-size: 1.35em;
+  font-weight: 800;
+  color: var(--azul-oscuro);
+  line-height: 1.25;
+}
+
+.evento-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid #eee;
+}
+.evento-datos .dato {
+  font-size: 0.9em;
+  color: #444;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.evento-datos .precio span {
+  font-weight: 700;
+  color: var(--verde-precio);
+}
+
+.evento a {
+  margin-top: 4px;
+  color: var(--azul-medio);
+  text-decoration: none;
+  font-size: 0.9em;
+  font-weight: 700;
+}
+.evento a:hover { text-decoration: underline; }
+
+#estado { text-align: center; padding: 40px; color: #777; grid-column: 1 / -1; }
+
+/* ============================================
+   FOOTER
+   ============================================ */
+footer {
+  background: var(--azul-oscuro);
+  color: rgba(255,255,255,0.75);
+  padding: 30px 20px;
+  text-align: center;
+  font-size: 0.85em;
+  margin-top: 40px;
+}
+footer strong { color: white; }
+
+/* ============================================
+   ÍCONOS (Lucide)
+   ============================================ */
+[data-lucide] {
+  width: 16px;
+  height: 16px;
+  vertical-align: -3px;
+  margin-right: 2px;
+}
+.categorias button [data-lucide] {
+  width: 15px;
+  height: 15px;
+  vertical-align: -2px;
+}

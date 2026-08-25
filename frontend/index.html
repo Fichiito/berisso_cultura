@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agenda Cultural de Berisso</title>
+
+  <!-- Tipografía de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
+  <!-- Nuestros estilos -->
+  <link rel="stylesheet" href="style.css">
+
+ <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-contenido">
+      <h1>Agenda Cultural de Berisso</h1>
+      <p class="subtitulo">Todos los eventos, obras y actividades culturales de la ciudad, actualizados automáticamente.</p>
+    </div>
+  </div>
+
+  <div class="categorias" id="categorias">
+    <button class="activo" data-categoria="todos">Todos</button>
+    <button data-categoria="Teatro"><i data-lucide="drama"></i> Cine / Teatro</button>
+    <button data-categoria="Música"><i data-lucide="music"></i> Música</button>
+    <button data-categoria="Fiestas"><i data-lucide="party-popper"></i> Fiestas</button>
+  </div>
+
+  <div class="dias" id="dias">
+    <!-- Se llena solo desde script.js -->
+  </div>
+
+  <div class="buscador">
+    <input type="text" id="busqueda" placeholder="Buscar evento...">
+      <button id="btn-buscar"><i data-lucide="search"></i></button>
+  </div>
+
+  <div id="eventos">
+    <p id="estado">Cargando eventos...</p>
+  </div>
+
+  <footer>
+    <p><strong>Agenda Cultural de Berisso</strong></p>
+    <p>Datos recopilados automáticamente de fuentes culturales locales.</p>
+    <!-- Acá van a ir los íconos de redes del muni más adelante -->
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

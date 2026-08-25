@@ -58,6 +58,10 @@ for obra in obras:
     precio_match = re.search(r"Desde \$ ?([\d.]+)", texto_completo)
     precio = f"Desde ${precio_match.group(1)}" if precio_match else None
 
+    imagen_tag = bloque.find("img") if bloque else None
+    print(imagen_tag)
+    imagen_url = imagen_tag["src"] if imagen_tag and imagen_tag.get("src") else None
+
     fecha_hora = convertir_fecha(fecha, hora)
 
     eventos.append({
@@ -67,6 +71,7 @@ for obra in obras:
         "categoria": "Teatro",
         "precio": precio,
         "link_fuente": url,
+        "imagen_url": imagen_url,
     })
 
 conexion = psycopg2.connect(
@@ -82,13 +87,13 @@ insertados = 0
 
 for e in eventos:
     cursor.execute("""
-        INSERT INTO eventos (titulo, fecha_hora, lugar, categoria, precio, link_fuente)
-        VALUES (%s, %s, %s, %s, %s, %s)
+         INSERT INTO eventos (titulo, fecha_hora, lugar, categoria, precio, link_fuente, imagen_url)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON CONFLICT (titulo, fecha_hora, lugar)
         DO UPDATE SET
             precio = EXCLUDED.precio,
             actualizado_en = NOW()
-    """, (e["titulo"], e["fecha_hora"], e["lugar"], e["categoria"], e["precio"], e["link_fuente"]))
+    """, (e["titulo"], e["fecha_hora"], e["lugar"], e["categoria"], e["precio"], e["link_fuente"], e["imagen_url"]))
     insertados += 1
 
 conexion.commit()
