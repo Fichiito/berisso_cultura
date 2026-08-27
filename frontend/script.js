@@ -116,6 +116,7 @@ function renderizarEventos(eventos) {
       const div = document.createElement("div");
       div.className = "evento";
       div.innerHTML = `
+        ${ev.imagen_url ? `<img class="evento-img" src="${ev.imagen_url}" alt="${ev.titulo}" loading="lazy">` : ""}
         <span class="categoria-tag">${ev.categoria || "Evento"}</span>
         <h2>${ev.titulo}</h2>
         <div class="evento-datos">

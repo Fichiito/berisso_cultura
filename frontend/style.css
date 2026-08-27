@@ -184,6 +184,14 @@ body {
 }
 .evento:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.14); }
 
+.evento-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
 .categoria-tag {
   display: inline-block;
   background: #e8f0fe;
