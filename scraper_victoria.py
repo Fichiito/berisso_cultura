@@ -4,8 +4,9 @@ import re
 import psycopg2
 from datetime import datetime
 import os
-import hashlib
 from dotenv import load_dotenv
+from utilidades import descargar_imagen
+
 
 load_dotenv()
 
@@ -13,29 +14,10 @@ headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
+
+
 BASE_URL = "https://teatrocerca.com.ar"
-IMAGENES_DIR = os.path.join("frontend", "img", "eventos")
-os.makedirs(IMAGENES_DIR, exist_ok=True)
 
-
-def descargar_imagen(url_imagen, titulo):
-    if not url_imagen:
-        return None
-    try:
-        if url_imagen.startswith("/"):
-            url_imagen = BASE_URL + url_imagen
-        resp = requests.get(url_imagen, headers=headers, timeout=10)
-        resp.raise_for_status()
-        ext = os.path.splitext(url_imagen.split("?")[0])[1] or ".jpg"
-        nombre_hash = hashlib.md5(url_imagen.encode()).hexdigest()[:12]
-        nombre_archivo = f"{nombre_hash}{ext}"
-        ruta = os.path.join(IMAGENES_DIR, nombre_archivo)
-        with open(ruta, "wb") as f:
-            f.write(resp.content)
-        return os.path.join("img", "eventos", nombre_archivo).replace("\\", "/")
-    except Exception as e:
-        print(f"Error descargando imagen: {e}")
-        return None
 
 
 url = "https://teatrocerca.com.ar/sala/cine-teatro-victoria"
@@ -88,7 +70,8 @@ for card in cards:
 
     imagen_tag = card.select_one("img.obra-poster")
     imagen_src = imagen_tag["src"] if imagen_tag and imagen_tag.get("src") else None
-    imagen_url = descargar_imagen(imagen_src, titulo)
+    imagen_url = descargar_imagen(imagen_src, titulo, base_url=BASE_URL)
+    
 
     fecha_hora = convertir_fecha(fecha, hora)
 
@@ -117,9 +100,10 @@ for e in eventos:
     cursor.execute("""
          INSERT INTO eventos (titulo, fecha_hora, lugar, categoria, precio, link_fuente, imagen_url)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (titulo, fecha_hora, lugar)
+             ON CONFLICT (titulo, fecha_hora, lugar)
         DO UPDATE SET
             precio = EXCLUDED.precio,
+            imagen_url = EXCLUDED.imagen_url,
             actualizado_en = NOW()
     """, (e["titulo"], e["fecha_hora"], e["lugar"], e["categoria"], e["precio"], e["link_fuente"], e["imagen_url"]))
     insertados += 1
