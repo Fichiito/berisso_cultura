@@ -4,12 +4,13 @@ from extractor_ia.config import AI_API_KEY, AI_MODEL
 
 cliente = genai.Client(api_key=AI_API_KEY)
 
-PROMPT_BASE = """Sos un asistente que analiza texto de noticias/artículos culturales de Berisso, Argentina, y determina si describen un EVENTO CONCRETO Y PRÓXIMO (con fecha específica, no una fiesta genérica sin fecha ni una nota vieja).
+PROMPT_EXTRAER = """Sos un asistente que analiza textos de noticias/artículos culturales de Berisso, Argentina, y determina cuáles describen un EVENTO CONCRETO Y PRÓXIMO (con fecha específica, no una fiesta genérica sin fecha ni una nota vieja).
 
-Hoy es {fecha_hoy}. Si el texto no tiene fecha, o la fecha ya pasó, o es una nota genérica sin evento concreto, respondé:
-{{"es_evento": false}}
+Hoy es {fecha_hoy}.
 
-Si SÍ es un evento concreto y futuro, respondé EXACTAMENTE en este formato JSON (sin texto extra, sin explicaciones):
+Para cada texto, determiná si es un evento concreto y futuro. Si no lo es (sin fecha, fecha pasada, nota genérica), el elemento del array debe ser: {{"es_evento": false}}
+
+Si SÍ es un evento concreto y futuro, el elemento debe ser:
 {{
   "es_evento": true,
   "titulo": "...",
@@ -21,18 +22,31 @@ Si SÍ es un evento concreto y futuro, respondé EXACTAMENTE en este formato JSO
   "descripcion_corta": "máximo 20 palabras"
 }}
 
-Texto a analizar:
-\"\"\"
-{texto}
-\"\"\"
+Respondé EXACTAMENTE con un array JSON con exactamente {cantidad} elementos, uno por cada texto, en el mismo orden. Sin texto extra, sin explicaciones.
+
+Textos a analizar:
+{textos}
 """
 
-def extraer_evento(texto, fecha_hoy):
+
+def extraer_eventos(items, fecha_hoy):
     """
-    Le manda el texto a Gemini y devuelve un dict con el evento,
-    o None si no es un evento o hubo algún error.
+    Le manda múltiples textos a la IA en una sola llamada y devuelve
+    una lista de resultados (dict con evento o None por cada item).
     """
-    prompt = PROMPT_BASE.format(texto=texto[:4000], fecha_hoy=fecha_hoy)
+    if not items:
+        return []
+
+    textos_formateados = ""
+    for i, item in enumerate(items):
+        texto_corto = item["texto"][:2000]
+        textos_formateados += f"\n--- TEXTO {i+1} ---\n{texto_corto}\n"
+
+    prompt = PROMPT_EXTRAER.format(
+        fecha_hoy=fecha_hoy,
+        cantidad=len(items),
+        textos=textos_formateados
+    )
 
     try:
         respuesta = cliente.models.generate_content(
@@ -42,16 +56,29 @@ def extraer_evento(texto, fecha_hoy):
         texto_respuesta = respuesta.text.strip()
         texto_respuesta = texto_respuesta.replace("```json", "").replace("```", "").strip()
 
-        datos = json.loads(texto_respuesta)
+        resultados = json.loads(texto_respuesta)
 
-        if not datos.get("es_evento"):
-            return None
+        if not isinstance(resultados, list):
+            print("La IA no devolvió un array:", str(resultados)[:200])
+            return [None] * len(items)
 
-        return datos
+        if len(resultados) != len(items):
+            print(f"WARNING: Se esperaban {len(items)} resultados, se obtuvieron {len(resultados)}")
+            while len(resultados) < len(items):
+                resultados.append(None)
+
+        eventos = []
+        for resultado in resultados:
+            if isinstance(resultado, dict) and resultado.get("es_evento"):
+                eventos.append(resultado)
+            else:
+                eventos.append(None)
+
+        return eventos
 
     except json.JSONDecodeError:
         print("La IA no devolvió un JSON válido:", texto_respuesta[:200])
-        return None
+        return [None] * len(items)
     except Exception as e:
         print(f"Error consultando la IA: {e}")
-        return None
+        return [None] * len(items)
