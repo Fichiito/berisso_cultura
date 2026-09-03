@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import time
 
 from extractor_ia.fuentes import FUENTES
-from extractor_ia.cliente_ia import extraer_evento
+from extractor_ia.cliente_ia import extraer_eventos
 from utilidades import descargar_imagen
 
 load_dotenv()
@@ -32,7 +32,9 @@ def procesar_fuente_listado(fuente):
         href = a.get("href")
         if not href:
             continue
-        if href.startswith("/"):
+        if href.startswith("./"):
+            href = base + href[1:]
+        elif href.startswith("/"):
             href = base + href
 
         imagen_url = None
@@ -158,16 +160,23 @@ def ejecutar():
 
         print(f"  {len(items)} items encontrados")
 
-        for item in items:
-            resultado = extraer_evento(item["texto"], fecha_hoy)
-            time.sleep(4)
+        BATCH_SIZE = 10
+        for i in range(0, len(items), BATCH_SIZE):
+            lote = items[i:i + BATCH_SIZE]
+            print(f"  Procesando lote {i // BATCH_SIZE + 1} ({len(lote)} items)...")
 
-            if resultado:
-                print(f"  ✓ Evento encontrado: {resultado['titulo']} ({resultado['fecha']})")
-                guardar_evento(resultado, item)
-                total_encontrados += 1
-            else:
-                print(f"  · No es evento (o no se pudo interpretar)")
+            resultados = extraer_eventos(lote, fecha_hoy)
+
+            for item, resultado in zip(lote, resultados):
+                if resultado:
+                    print(f"    ✓ Evento encontrado: {resultado['titulo']} ({resultado['fecha']})")
+                    guardar_evento(resultado, item)
+                    total_encontrados += 1
+                else:
+                    print(f"    · No es evento (o no se pudo interpretar)")
+
+            if i + BATCH_SIZE < len(items):
+                time.sleep(2)
 
     print(f"\nTotal eventos nuevos/actualizados: {total_encontrados}")
 
